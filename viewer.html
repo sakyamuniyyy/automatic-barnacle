@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Display and Transform XML</title>
+    <script type="text/javascript">
+        function display() {
+            /* ACTION REQUIRED: 
+               1. Replace the xmlURL string with the actual URL provided by your centre.
+               2. Ensure xmlStyleURL matches the name of your saved XSL file.
+            */
+            var xmlURL = "Outcome 3 xml.xml"; 
+            var xmlStyleURL = "style.xsl"; 
+            
+            var xmlDocument;
+            var xmlStyleSheet;
+            
+            try {
+                // Load XML document
+                if (window.XMLHttpRequest) {
+                    request = new XMLHttpRequest();
+                } else {
+                    // Older IE
+                    request = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                request.open("GET", xmlURL, false);
+                request.send();
+                xmlDocument = request.responseXML;
+
+                // Load XML stylesheet
+                request.open("GET", xmlStyleURL, false);
+                request.send();
+                xmlStyleSheet = request.responseXML;
+
+                // Transform and display XML document
+                if (window.ActiveXObject) {
+                    // Older IE
+                    transformedXML = xmlDocument.transformNode(xmlStyleSheet);
+                    document.getElementById("output").innerHTML = transformedXML;
+                } else {
+                    xsltProcessor = new XSLTProcessor();
+                    xsltProcessor.importStylesheet(xmlStyleSheet);
+                    transformedXML = xsltProcessor.transformToFragment(xmlDocument, document);
+                    document.getElementById("output").appendChild(transformedXML);
+                }
+            } catch (err) {
+                alert('Your browser cannot handle this script. Note: Running this locally might trigger CORS restrictions in modern browsers.');
+            }
+        }
+    </script>
+</head>
+<body onload="display()">
+    <div id="output"></div>
+</body>
+</html>
